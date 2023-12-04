@@ -40,13 +40,13 @@ bool areParenthesesBalanced(const std::string& expr) {
             parentheses.push(c);
         } else if (c == ')') {
             if (parentheses.empty() || parentheses.top() != '(') {
-                return false;  // Unbalanced parentheses
+                return false; 
             }
             parentheses.pop();
         }
     }
 
-    return parentheses.empty();  // If stack is empty, parentheses are balanced
+    return parentheses.empty(); 
 }
 
 double getPrecedence(const Operator& op) {
@@ -102,7 +102,7 @@ public:
                     stack.pop();
                 }
                 if (!stack.empty() && stack.top() == '(') {
-                    stack.pop(); // Discard the '('
+                    stack.pop();
                 }
             } else if (isOperator(c)) {
                 while (!stack.empty() && stack.top() != '(' && precedenceMap[c] <= precedenceMap[stack.top()]) {
@@ -120,7 +120,7 @@ public:
             stack.pop();
         }
 
-        // Trim any extra space at the end
+
         if (!postfix.empty() && postfix.back() == ' ') {
             postfix.pop_back();
         }

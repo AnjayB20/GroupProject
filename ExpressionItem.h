@@ -8,25 +8,25 @@
 class Operator {
 public:
     std::string name;
-    int precedence;
-    std::function<int(int, int)> operation;
+    double precedence;
+    std::function<double(double, double)> operation;
     
-    Operator(const std::string& opName, int opPrecedence, std::function<int(int, int)> opFunction)
+    Operator(const std::string& opName, double opPrecedence, std::function<double(double, double)> opFunction)
         : name(opName), precedence(opPrecedence), operation(opFunction) {}
     
-    Operator(const std::string& opName, int opPrecedence) : name(opName) , precedence(opPrecedence) {}
+    Operator(const std::string& opName, double opPrecedence) : name(opName) , precedence(opPrecedence) {}
 
    
     std::string getName() const {
         return name;
     }
 
-    int getPrecedence() const {
+    double getPrecedence() const {
         return precedence;
     }
     
   
-    int execute(int a, int b) const {
+    double execute(double a, double b) const {
         return operation(a, b);
     }
 };
@@ -39,7 +39,7 @@ public:
         operators.emplace_back("+", 1, [](double a, double b) { return a + b; });
         operators.emplace_back("-", 1, [](double a, double b) { return a - b; });
         operators.emplace_back("*", 2, [](double a, double b) { return a * b; });
-        operators.emplace_back("/", 2, [](int a, int b) {
+        operators.emplace_back("/", 2, [](double a, double b) {
                    if (b != 0) {
                        return a / b;
                    } else {
@@ -75,10 +75,10 @@ public:
 
 private:
     Type type;
-    std::variant<int, Operator> item;
+    std::variant<double, Operator> item;
 
 public:
-    ExpressionItem(int num) : type(Type::Number), item(num) {}
+    ExpressionItem(double num) : type(Type::Number), item(num) {}
     ExpressionItem(Operator oper) : type(Type::Operator), item(oper) {}
 
     bool isNumber() const {
@@ -89,9 +89,9 @@ public:
         return type == Type::Operator;
     }
 
-    int getNumber() const {
+    double getNumber() const {
         if (type == Type::Number) {
-            return std::get<int>(item);
+            return std::get<double>(item);
         }
         throw std::logic_error("Not a number");
     }
