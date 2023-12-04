@@ -171,7 +171,10 @@ public:
 
     int main() {
         OperatorList operators;
-        std::string infixExpression =  "(((2 + 3))) + (((1 + 2)))";
+        
+        std::cout << "Enter a Mathematical Expression: " << std::endl;
+        std::string infixExpression;
+        std::getline(std::cin, infixExpression);
         MathExpression mathExpr = MathExpression(infixExpression);
 
         
