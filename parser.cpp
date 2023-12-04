@@ -49,7 +49,7 @@ bool areParenthesesBalanced(const std::string& expr) {
     return parentheses.empty();  // If stack is empty, parentheses are balanced
 }
 
-int getPrecedence(const Operator& op) {
+double getPrecedence(const Operator& op) {
     return op.precedence;
 }
 
@@ -63,7 +63,7 @@ public:
        
     }
     
-    int getLength() {
+    double getLength() {
     	return postfixExpressionList.size();
     }
     
@@ -74,7 +74,7 @@ public:
     
 
 
-    int getPrecedence(const OperatorList& opList, char op) {
+    double getPrecedence(const OperatorList& opList, char op) {
         std::string opStr(1, op);
         Operator oper = opList.getOperatorByName(opStr);
         return oper.getPrecedence();
@@ -84,7 +84,7 @@ public:
         std::stack<char> stack;
         std::string postfix;
 
-        std::unordered_map<char, int> precedenceMap;
+        std::unordered_map<char, double> precedenceMap;
         for (const Operator& op : opList.getOperators()) {
             precedenceMap[op.name[0]] = op.getPrecedence();
         }
@@ -129,34 +129,26 @@ public:
     }
 
 
-    int evaluateExpression(const OperatorList& opList, const std::string& postfixExpression) {
-        std::stack<int> evaluationStack;
-        
-        std::cout << postfixExpression << std::endl;
+    double evaluateExpression(const OperatorList& opList, const std::string& postfixExpression) {
+        std::stack<double> evaluationStack;
 
         for (char c : postfixExpression) {
             if (std::isdigit(c)) {
                 evaluationStack.push(c - '0');
             } else if (isOperator(c)) {
-                int operand2 = evaluationStack.top();
+                double operand2 = evaluationStack.top();
                 evaluationStack.pop();
 
-                int operand1 = evaluationStack.top();
+                double operand1 = evaluationStack.top();
                 evaluationStack.pop();
 
                 std::string opStr(1, c);
                 Operator oper = opList.getOperatorByName(opStr);
-                int result = oper.execute(operand1, operand2);
+                double result = oper.execute(operand1, operand2);
                 evaluationStack.push(result);
             }
             
-            std::cout << "Evaluation Stack: ";
-                   std::stack<int> temp = evaluationStack;
-                   while (!temp.empty()) {
-                       std::cout << temp.top() << " ";
-                       temp.pop();
-                   }
-                   std::cout << std::endl;
+        
                }
         
 
@@ -181,7 +173,7 @@ public:
         std::string postfixExpression = mathExpr.infixToPostfix(operators, infixExpression);
 
         try {
-            int result = mathExpr.evaluateExpression( operators, postfixExpression);
+            double result = mathExpr.evaluateExpression( operators, postfixExpression);
             std::cout << "Result: " << result << std::endl;
         } catch (std::exception& e) {
             std::cout << "Error: " << e.what() << std::endl;
