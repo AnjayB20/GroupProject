@@ -79,7 +79,7 @@ public:
         Operator oper = opList.getOperatorByName(opStr);
         return oper.getPrecedence();
     }
-    
+
     std::string infixToPostfix(const OperatorList& opList, const std::string& expression) {
         std::stack<char> stack;
         std::string postfix;
@@ -89,9 +89,7 @@ public:
             precedenceMap[op.name[0]] = op.getPrecedence();
         }
 
-        for (size_t i = 0; i < expression.length(); ++i) {
-            char c = expression[i];
-
+        for (char c : expression) {
             if (std::isdigit(c)) {
                 postfix += c;
                 postfix += ' ';
@@ -107,17 +105,12 @@ public:
                     stack.pop(); // Discard the '('
                 }
             } else if (isOperator(c)) {
-                if ((c == '+' || c == '-') && (i == 0 || expression[i - 1] == '(')) {
-                    // Handle unary operators at the beginning of the expression or after '('
-                    stack.push((c == '+') ? '#' : '$');
-                } else {
-                    while (!stack.empty() && stack.top() != '(' && precedenceMap[c] <= precedenceMap[stack.top()]) {
-                        postfix += stack.top();
-                        postfix += ' ';
-                        stack.pop();
-                    }
-                    stack.push(c);
+                while (!stack.empty() && stack.top() != '(' && precedenceMap[c] <= precedenceMap[stack.top()]) {
+                    postfix += stack.top();
+                    postfix += ' ';
+                    stack.pop();
                 }
+                stack.push(c);
             }
         }
 
@@ -127,71 +120,45 @@ public:
             stack.pop();
         }
 
+        // Trim any extra space at the end
         if (!postfix.empty() && postfix.back() == ' ') {
             postfix.pop_back();
         }
 
         return postfix;
     }
+
+
     int evaluateExpression(const OperatorList& opList, const std::string& postfixExpression) {
         std::stack<int> evaluationStack;
+        
+        std::cout << postfixExpression << std::endl;
 
-        std::cout << "Postfix Expression: " << postfixExpression << std::endl;
-
-        size_t i = 0;
-        while (i < postfixExpression.length()) {
-            char c = postfixExpression[i];
-
-            std::cout << "Processing character at index " << i << ": " << c << std::endl;
-
-            if (c == ' ') {
-                ++i;
-                continue;
-            }
-
+        for (char c : postfixExpression) {
             if (std::isdigit(c)) {
-                int operand = 0;
-                while (std::isdigit(c)) {
-                    operand = operand * 10 + (c - '0');
-                    c = postfixExpression[++i];
-                }
-                evaluationStack.push(operand);
-                std::cout << "Pushed operand: " << operand << " onto the stack" << std::endl;
-                continue;
-            }
-
-            if (isOperator(c)) {
-                if (evaluationStack.size() < 2) {
-                    throw std::logic_error("Invalid Expression for Evaluation (insufficient operands for binary operator)");
-                }
-
+                evaluationStack.push(c - '0');
+            } else if (isOperator(c)) {
                 int operand2 = evaluationStack.top();
                 evaluationStack.pop();
+
                 int operand1 = evaluationStack.top();
                 evaluationStack.pop();
 
-                int result;
-                if (c == '*') {
-                    result = operand1 * operand2;
-                    std::cout << "Applied operator: " << c << " on operands: " << operand1 << " and " << operand2 << std::endl;
-                } else if (c == '/') {
-                    if (operand2 == 0) {
-                        throw std::logic_error("Division by zero error");
-                    }
-                    result = operand1 / operand2;
-                    std::cout << "Applied operator: " << c << " on operands: " << operand1 << " and " << operand2 << std::endl;
-                } else {
-                    throw std::logic_error("Invalid Operator");
-                }
-
+                std::string opStr(1, c);
+                Operator oper = opList.getOperatorByName(opStr);
+                int result = oper.execute(operand1, operand2);
                 evaluationStack.push(result);
-                std::cout << "Pushed result: " << result << " onto the stack" << std::endl;
-                ++i;
-                continue;
             }
-
-            throw std::logic_error("Invalid Expression for Evaluation (unexpected character: " + std::string(1, c) + ")");
-        }
+            
+            std::cout << "Evaluation Stack: ";
+                   std::stack<int> temp = evaluationStack;
+                   while (!temp.empty()) {
+                       std::cout << temp.top() << " ";
+                       temp.pop();
+                   }
+                   std::cout << std::endl;
+               }
+        
 
         if (evaluationStack.size() == 1) {
             return evaluationStack.top();
@@ -200,11 +167,11 @@ public:
         }
     }
 
-   };
+};
 
     int main() {
         OperatorList operators;
-        std::string infixExpression =  "  10 * 2 / 5";
+        std::string infixExpression =  "(((2 + 3))) + (((1 + 2)))";
         MathExpression mathExpr = MathExpression(infixExpression);
 
         

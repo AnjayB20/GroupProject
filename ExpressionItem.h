@@ -10,17 +10,13 @@ public:
     std::string name;
     int precedence;
     std::function<int(int, int)> operation;
-    std::function<int(int)> unaryOperation; // Function for unary operations
-
-
+    
     Operator(const std::string& opName, int opPrecedence, std::function<int(int, int)> opFunction)
         : name(opName), precedence(opPrecedence), operation(opFunction) {}
     
     Operator(const std::string& opName, int opPrecedence) : name(opName) , precedence(opPrecedence) {}
 
-       Operator(const std::string& opName, int opPrecedence, std::function<int(int)> unaryOpFunction)
-           : name(opName), precedence(opPrecedence), unaryOperation(unaryOpFunction) {}
-
+   
     std::string getName() const {
         return name;
     }
@@ -29,13 +25,7 @@ public:
         return precedence;
     }
     
-    int executeUnary(int a) const {
-           if (unaryOperation) {
-               return unaryOperation(a);
-           }
-           throw std::runtime_error("Unary operation not supported");
-       }
-
+  
     int execute(int a, int b) const {
         return operation(a, b);
     }
@@ -60,7 +50,7 @@ public:
         operators.emplace_back("^", 3, [](double a, double b) { return pow(a, b); });
         operators.emplace_back("(", 4 );
         operators.emplace_back(")", 4 );
-        operators.emplace_back("-", 3, [](int a) { return -a; });
+       
 
         // Add more operators as needed
     }
